@@ -9,3 +9,12 @@
     ID, ID Usuário, Título
     
 #### *Apenas usuários *logados* podem criar uma lista de tarefas
+
+
+Tabela todo:
+
+ID - Sempre primary key
+Id usuário
+Título da tarefa 
+Descrição da tarefa
+Concluído

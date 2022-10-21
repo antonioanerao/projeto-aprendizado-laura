@@ -2,6 +2,9 @@
 
 namespace Models;
 
+use Models\Sql\Sql;
+use Exception;
+
 class Usuario {
 
     private int $id;
@@ -84,6 +87,45 @@ class Usuario {
      */
     public function getTipoUsuario(): int {
         return $this->tipoUsuario;
+    }
+
+    /**
+     * @param $id
+     * @return void
+     */
+    public function find($id) {
+        $sql = new Sql();
+        $results = $sql->select("SELECT * FROM usuarios WHERE id = :ID", array(
+            ":ID" => $id
+        ));
+
+        if (count($results) > 0) {
+            $this->setData($results[0]);
+        }
+    }
+
+    /**
+     * @param $data
+     * @return void
+     */
+    public function setData($data): void
+    {
+        $this->setId($data['id']);
+        $this->setNome($data['nome']);
+        $this->setEmail($data['email']);
+        $this->setSenha($data['senha']);
+        $this->setTipoUsuario($data['tipoUsuario']);
+    }
+
+    public function __toString(){
+        return json_encode(array(
+            "id"=>$this->getId(),
+            "nome"=>$this->getNome(),
+            "email"=>$this->getEmail(),
+            "senha"=>$this->getSenha(),
+            "tipoUsuario"=>$this->getTipoUsuario()
+
+        ));
     }
 
 }

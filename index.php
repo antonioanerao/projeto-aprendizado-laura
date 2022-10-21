@@ -5,5 +5,4 @@ use Models\Usuario;
 
 $usuario = new Usuario();
 
-$usuario->setNome("Laravel");
-echo $usuario->getNome();
+$usuario->find(1);
