@@ -104,6 +104,18 @@ class Usuario {
         }
     }
 
+    public function insert(){
+        $sql = new Sql();
+        $sql->select("INSERT INTO usuarios (email, nome, senha, tipoUsuario) 
+            VALUES (:EMAIL, :NOME, :SENHA, :TIPOUSUARIO)
+        ", array(
+            ':EMAIL' => $this->getEmail(),
+            ':NOME' => $this->getNome(),
+            ':SENHA' => $this->getSenha(),
+            ':TIPOUSUARIO' => $this->getTipoUsuario()
+        ));
+    }
+
     /**
      * @param $data
      * @return void
@@ -116,6 +128,7 @@ class Usuario {
         $this->setSenha($data['senha']);
         $this->setTipoUsuario($data['tipoUsuario']);
     }
+
 
     public function __toString(){
         return json_encode(array(
