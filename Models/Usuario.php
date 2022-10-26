@@ -104,6 +104,9 @@ class Usuario {
         }
     }
 
+    /**
+     * @return void
+     */
     public function insert(){
         $sql = new Sql();
         $sql->select("INSERT INTO usuarios (email, nome, senha, tipoUsuario) 
@@ -113,6 +116,23 @@ class Usuario {
             ':NOME' => $this->getNome(),
             ':SENHA' => $this->getSenha(),
             ':TIPOUSUARIO' => $this->getTipoUsuario()
+        ));
+    }
+
+    /**
+     * @param $email
+     * @param $senha
+     * @return void
+     */
+    public function update($email, $senha){
+        $this->setEmail($email);
+        $this->setSenha($senha);
+
+        $sql = new Sql();
+        $sql->query("UPDATE usuarios SET email = :EMAIL, senha = :SENHA WHERE id = :ID", array (
+            ':EMAIL'=>$this->getEmail(),
+            ':SENHA'=>$this->getSenha(),
+            ':ID'=>$this->getId()
         ));
     }
 

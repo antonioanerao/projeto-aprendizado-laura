@@ -9,9 +9,13 @@ $usuario = new Usuario();
 //
 //echo $usuario;
 
-$usuario->setNome("antonio");
-$usuario->setEmail("antonio@email.com");
-$usuario->setSenha("123456");
-$usuario->setTipoUsuario(1);
+//$usuario->setNome("antonio");
+//$usuario->setEmail("antonio@email.com");
+//$usuario->setSenha("123456");
+//$usuario->setTipoUsuario(1);
+//
+//$usuario->insert();
 
-$usuario->insert();
+$usuario->find(1);
+
+$usuario->update("laura@email.com", "1234");
