@@ -16,6 +16,11 @@ $usuario = new Usuario();
 //
 //$usuario->insert();
 
-$usuario->find(1);
+//$usuario->find(1);
+//
+//$usuario->update("laura@email.com", "1234");
 
-$usuario->update("laura@email.com", "1234");
+$usuario->find(7);
+$usuario->delete();
+
+echo $usuario;

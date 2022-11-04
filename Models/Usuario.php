@@ -135,6 +135,17 @@ class Usuario {
             ':ID'=>$this->getId()
         ));
     }
+    public function delete(){
+        $sql = new Sql();
+        $sql->query("DELETE FROM usuarios WHERE id = :ID", array (
+            ':ID'=>$this->getId()
+        ));
+        $this->setID(0);
+        $this->setEmail("");
+        $this->setNome("");
+        $this->setSenha("");
+        $this->setTipoUsuario(0);
+    }
 
     /**
      * @param $data
