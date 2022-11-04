@@ -1,26 +1,16 @@
 <?php
-require_once "vendor/autoload.php";
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-use Models\Usuario;
+
+include_once('vendor/autoload.php');
+
+use App\Models\Usuario;
 
 $usuario = new Usuario();
 
-//$usuario->find(1);
-//
-//echo $usuario;
+foreach ($usuario->all("usuarios") as $usuario){
+    echo $usuario->nome . "<br>";
+}
 
-//$usuario->setNome("antonio");
-//$usuario->setEmail("antonio@email.com");
-//$usuario->setSenha("123456");
-//$usuario->setTipoUsuario(1);
-//
-//$usuario->insert();
-
-//$usuario->find(1);
-//
-//$usuario->update("laura@email.com", "1234");
-
-$usuario->find(7);
-$usuario->delete();
-
-echo $usuario;
