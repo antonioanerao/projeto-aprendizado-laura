@@ -10,7 +10,22 @@ use App\Models\Usuario;
 
 $usuario = new Usuario();
 
-foreach ($usuario->all("usuarios") as $usuario){
+//$usuario->insert($usuario->getTableName(), [
+//    'nome' => "Laravel", 'email' => "demo@hell.com", 'senha' => "123456"
+//]);
+
+//$usuario->update($usuario->getTableName(), 'nome = :NOME, email = :EMAIL WHERE id = :ID', [
+//    ':NOME' => "Lara",
+//    ':ID' => 9,
+//    ':EMAIL' => "lara@mail.com"
+//]);
+
+$usuario->delete($usuario->getTableName(), 'WHERE id = :ID', [
+   ':ID' => 9
+]);
+
+foreach ($usuario->all($usuario->getTableName()) as $usuario){
     echo $usuario->nome . "<br>";
 }
+
 

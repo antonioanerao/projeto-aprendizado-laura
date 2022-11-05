@@ -3,14 +3,12 @@
 
 namespace App\Models;
 
+use App\Traits\BaseTrait;
 use Core\Database\Model;
 
 class Usuario extends Model
 {
-    protected string $table = 'users';
+    use BaseTrait;
+    protected string $table = 'usuarios';
 
-    public function getTableName(): string
-    {
-        return $this->table;
-    }
 }
