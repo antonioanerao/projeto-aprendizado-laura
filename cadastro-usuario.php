@@ -1,4 +1,6 @@
-<?php use App\Models\Usuario;
+<?php
+
+use App\Models\Usuario;
 
 session_start();
 
@@ -7,7 +9,15 @@ include_once('vendor/autoload.php');
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
+if(isset($_SESSION['email'])){
+    if(Usuario::user()->tipoUsuario == 1){
+        header('Location: ' . '/');
+    }
+}
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,7 +25,7 @@ error_reporting(E_ALL);
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Homepage</title>
+    <title>Login</title>
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <!-- Bootstrap icons-->
@@ -31,7 +41,7 @@ error_reporting(E_ALL);
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                <li class="nav-item"><a class="nav-link active" aria-current="page" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link" aria-current="page" href="/">Home</a></li>
                 <?php if(isset($_SESSION['email'])) : ?>
                     <?php if(Usuario::user()->tipoUsuario == 0) : ?>
                         <li class="nav-item"><a class="nav-link" aria-current="page" href="cadastro-usuario.php">Cadastro de Usuário</a></li>
@@ -48,8 +58,7 @@ error_reporting(E_ALL);
 <header class="bg-dark py-5">
     <div class="container px-4 px-lg-5 my-5">
         <div class="text-center text-white">
-            <h1 class="display-4 fw-bolder">Home</h1>
-            <p class="lead fw-normal text-white-50 mb-0">Built with bootstrap</p>
+            <h1 class="display-4 fw-bolder">Cadastro de Usuário</h1>
         </div>
     </div>
 </header>
@@ -57,18 +66,40 @@ error_reporting(E_ALL);
 <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">
         <div class="row">
-            <div class="col-md-12">
-                <div class="alert alert-info text-center">
-                    <h2>
-                        <?php
-                        if(isset($_SESSION['email'])):
-                            echo Usuario::user()->nome;
-                        else:
-                            echo "Olá, visitante!";
-                        endif;
-                        ?>
-                    </h2>
-                </div>
+            <div class="col-4 offset-4">
+                <form action="login.php" method="post">
+                    <?php
+                    if(isset($_POST['acessar'])){
+                        $email = $_POST['email'];
+                        $senha = $_POST['senha'];
+
+                        if(empty($email) or empty($senha)){
+                            echo "<div class='alert alert-danger text-center'>Informe seu Usuário e Senha.</div> ";
+                        }
+                        else{
+                            $usuario = new \App\Models\Usuario();
+                            $u = $usuario->select('*', $usuario->getTableName(), 'WHERE email = ? and senha = ?', [
+                                $email, $senha
+                            ]);
+                            if($u){
+                                $_SESSION["email"] = $email;
+                                header('Location: ' . '/');
+                            } else {
+                                echo "<div class='alert alert-danger text-center'>Usuário ou senha inválidos.</div> ";
+                            }
+                        }
+                    }
+                    ?>
+                    <label>E-mail</label>
+                    <input name="email" type="email" class="form-control">
+                    <br>
+                    <label>Senha</label>
+                    <input name="senha" type="password" class=" form-control">
+                    <br>
+                    <button name="acessar" type="submit" class="btn btn-primary">
+                        Acessar
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -83,6 +114,3 @@ error_reporting(E_ALL);
 <script src="js/scripts.js"></script>
 </body>
 </html>
-
-
-
