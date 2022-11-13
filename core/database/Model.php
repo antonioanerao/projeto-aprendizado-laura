@@ -47,6 +47,12 @@ abstract class Model extends Connection
         return $this->query->fetchAll(PDO::FETCH_CLASS);
     }
 
+    public function find($campos, $tabela, $prep, $exec): array
+    {
+        $this->prepExec('SELECT ' . $campos . ' FROM ' . $tabela . ' ' . $prep . ' ', $exec);
+        return $this->query->fetch(PDO::FETCH_ASSOC);
+    }
+
     /**
      * Faz o update e dados em uma tabela
      *

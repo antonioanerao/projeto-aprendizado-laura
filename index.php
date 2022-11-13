@@ -1,4 +1,13 @@
-<?php session_start(); ?>
+<?php use App\Models\Usuario;
+
+session_start();
+
+include_once('vendor/autoload.php');
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,7 +32,14 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="/">Home</a></li>
-                <li class="nav-item"><a class="nav-link" aria-current="page" href="login.php">Login</a></li>
+                <?php if(isset($_SESSION['email'])) : ?>
+                    <?php if(Usuario::user()->tipoUsuario == 0) : ?>
+                        <li class="nav-item"><a class="nav-link" aria-current="page" href="cadastro-usuario.php">Cadastro de Usuário</a></li>
+                    <?php endif; ?>
+                    <li class="nav-item"><a class="nav-link" aria-current="page" href="logout.php">Logout</a></li>
+                <?php else : ?>
+                    <li class="nav-item"><a class="nav-link" aria-current="page" href="login.php">Login</a></li>
+                <?php  endif; ?>
             </ul>
         </div>
     </div>
@@ -44,7 +60,13 @@
             <div class="col-md-12">
                 <div class="alert alert-info text-center">
                     <h2>
-                        Lauzinha
+                        <?php
+                        if(isset($_SESSION['email'])):
+                            echo "Olá, " . Usuario::user()->nome;
+                        else:
+                            echo "Olá, visitante!";
+                        endif;
+                        ?>
                     </h2>
                 </div>
             </div>
