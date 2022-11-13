@@ -1,4 +1,18 @@
-<?php session_start(); ?>
+<?php
+session_start();
+if(isset($_SESSION['email'])){
+    header('Location: ' . '/');
+}
+
+include_once('vendor/autoload.php');
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,12 +55,40 @@
 <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">
         <div class="row">
-            <div class="col-md-12">
-                <div class="alert alert-info text-center">
-                    <h2>
+            <div class="col-4 offset-4">
+                <form action="login.php" method="post">
+                    <?php
+                        if(isset($_POST['acessar'])){
+                            $email = $_POST['email'];
+                            $senha = $_POST['senha'];
 
-                    </h2>
-                </div>
+                            if(empty($email) or empty($senha)){
+                                echo "<div class='alert alert-danger text-center'>Informe seu Usuário e Senha.</div> ";
+                            }
+                            else{
+                                $usuario = new \App\Models\Usuario();
+                                $u = $usuario->select('*', $usuario->getTableName(), 'WHERE email = ? and senha = ?', [
+                                    $email, $senha
+                                ]);
+                                if($u){
+                                    $_SESSION["email"] = $email;
+                                    header('Location: ' . '/');
+                                } else {
+                                    echo "<div class='alert alert-danger text-center'>Usuário ou senha inválidos.</div> ";
+                                }
+                            }
+                        }
+                    ?>
+                    <label>E-mail</label>
+                    <input name="email" type="email" class="form-control">
+                    <br>
+                    <label>Senha</label>
+                    <input name="senha" type="password" class=" form-control">
+                    <br>
+                    <button name="acessar" type="submit" class="btn btn-primary">
+                        Acessar
+                    </button>
+                </form>
             </div>
         </div>
     </div>
