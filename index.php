@@ -62,7 +62,7 @@ error_reporting(E_ALL);
                     <h2>
                         <?php
                         if(isset($_SESSION['email'])):
-                            echo Usuario::user()->nome;
+                            echo "Olá, " . Usuario::user()->nome;
                         else:
                             echo "Olá, visitante!";
                         endif;

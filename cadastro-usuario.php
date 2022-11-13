@@ -25,7 +25,7 @@ if(isset($_SESSION['email'])){
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Login</title>
+    <title>Cadastro de usuário</title>
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <!-- Bootstrap icons-->
@@ -44,7 +44,7 @@ if(isset($_SESSION['email'])){
                 <li class="nav-item"><a class="nav-link" aria-current="page" href="/">Home</a></li>
                 <?php if(isset($_SESSION['email'])) : ?>
                     <?php if(Usuario::user()->tipoUsuario == 0) : ?>
-                        <li class="nav-item"><a class="nav-link" aria-current="page" href="cadastro-usuario.php">Cadastro de Usuário</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="cadastro-usuario.php">Cadastro de Usuário</a></li>
                     <?php endif; ?>
                     <li class="nav-item"><a class="nav-link" aria-current="page" href="logout.php">Logout</a></li>
                 <?php else : ?>
@@ -58,7 +58,8 @@ if(isset($_SESSION['email'])){
 <header class="bg-dark py-5">
     <div class="container px-4 px-lg-5 my-5">
         <div class="text-center text-white">
-            <h1 class="display-4 fw-bolder">Cadastro de Usuário</h1>
+            <h1 class="display-4 fw-bolder">Cadastro</h1>
+            <p>Infome os dados do usuário</p>
         </div>
     </div>
 </header>
@@ -66,38 +67,71 @@ if(isset($_SESSION['email'])){
 <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">
         <div class="row">
-            <div class="col-4 offset-4">
-                <form action="login.php" method="post">
+            <div class="col-6 offset-3">
+                <form action="cadastro-usuario.php" method="post">
                     <?php
-                    if(isset($_POST['acessar'])){
+                    if(isset($_POST['cadastrar'])) {
                         $email = $_POST['email'];
                         $senha = $_POST['senha'];
+                        $resenha = $_POST['resenha'];
+                        $nome = $_POST['nome'];
+                        $tipoUsuario = $_POST['tipoUsuario'];
 
-                        if(empty($email) or empty($senha)){
-                            echo "<div class='alert alert-danger text-center'>Informe seu Usuário e Senha.</div> ";
+                        if(empty($email) or empty($senha) or empty($nome) or empty($tipoUsuario) or empty ($resenha)){
+                            echo "<div class='alert alert-danger text-center'>Informe todos os dados.</div> ";
                         }
                         else{
-                            $usuario = new \App\Models\Usuario();
-                            $u = $usuario->select('*', $usuario->getTableName(), 'WHERE email = ? and senha = ?', [
-                                $email, $senha
+                            $usuario = new Usuario();
+                            $u = $usuario->select('*', $usuario->getTableName(), 'WHERE email = ?', [
+                                    $email
                             ]);
+
                             if($u){
-                                $_SESSION["email"] = $email;
-                                header('Location: ' . '/');
-                            } else {
-                                echo "<div class='alert alert-danger text-center'>Usuário ou senha inválidos.</div> ";
+                                echo "<div class='alert alert-danger text-center'>E-mail já cadastrado.</div> ";
+                            }
+
+                            elseif ($senha != $resenha){
+                                echo "<div class='alert alert-danger text-center'>Sua senha e confirmação de senha não correspondem.</div> ";
+                            }
+
+                            else{
+                                if($tipoUsuario == 9){
+                                    $tipoUsuario = 0;
+                                }
+                                $usuario->insert($usuario->getTableName(), [
+                                    'nome'=>$nome,
+                                    'email'=>$email,
+                                    'senha'=>$senha,
+                                    'tipoUsuario'=>$tipoUsuario
+                                ]);
+                                echo "<div class='alert alert-success text-center'>Usuário cadastrado com sucesso.</div> ";
+
                             }
                         }
+
                     }
                     ?>
+                    <label>Nome</label>
+                    <input name="nome" type="text" class="form-control">
+                    <br>
                     <label>E-mail</label>
                     <input name="email" type="email" class="form-control">
                     <br>
                     <label>Senha</label>
-                    <input name="senha" type="password" class=" form-control">
+                    <input name="senha" type="password" class="form-control">
                     <br>
-                    <button name="acessar" type="submit" class="btn btn-primary">
-                        Acessar
+                    <label>Repita sua senha</label>
+                    <input name="resenha" type="password" class="form-control">
+                    <br>
+                    <label>Tipo de usuário</label>
+                    <select name="tipoUsuario" class="form-control">
+                        <option value="">Escolha uma Opção</option>
+                        <option value="9">Administrador</option>
+                        <option value="1">Usuário</option>
+                    </select>
+                    <br>
+                    <button name="cadastrar" type="submit" class="btn btn-primary">
+                        Cadastrar
                     </button>
                 </form>
             </div>
