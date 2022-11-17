@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Usuario;
+use App\Models\Todo;
+use Carbon\Carbon;
 
 session_start();
 
@@ -10,11 +12,6 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-if(isset($_SESSION['email'])){
-    if(Usuario::user()->tipoUsuario == 1){
-        header('Location: ' . '/');
-    }
-}
 ?>
 
 
@@ -25,7 +22,7 @@ if(isset($_SESSION['email'])){
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Cadastro de usuário</title>
+    <title>Tarefas</title>
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <!-- Bootstrap icons-->
@@ -59,8 +56,8 @@ if(isset($_SESSION['email'])){
 <header class="bg-dark py-5">
     <div class="container px-4 px-lg-5 my-5">
         <div class="text-center text-white">
-            <h1 class="display-4 fw-bolder">Cadastro</h1>
-            <p>Infome os dados do usuário</p>
+            <h1 class="display-4 fw-bolder">Minhas Tarefas</h1>
+            <p>Afazeres do dia: <br><?php echo Carbon::now('America/Rio_Branco')->format('d/m/Y') ?></p>
         </div>
     </div>
 </header>
@@ -69,67 +66,30 @@ if(isset($_SESSION['email'])){
     <div class="container px-4 px-lg-5 mt-5">
         <div class="row">
             <div class="col-6 offset-3">
-                <form action="cadastro-usuario.php" method="post">
+                <form action="tarefas.php" method="post">
                     <?php
                     if(isset($_POST['cadastrar'])) {
-                        $email = $_POST['email'];
-                        $senha = $_POST['senha'];
-                        $resenha = $_POST['resenha'];
-                        $nome = $_POST['nome'];
-                        $tipoUsuario = $_POST['tipoUsuario'];
+                        $tarefa = $_POST['tarefa'];
+                        $dataTarefa = Carbon::now();
+                        $idusuario = Usuario::user()->id;
 
-                        if(empty($email) or empty($senha) or empty($nome) or empty($tipoUsuario) or empty ($resenha)){
-                            echo "<div class='alert alert-danger text-center'>Informe todos os dados.</div> ";
+                        if(empty($tarefa)) {
+                            echo "<div class='alert alert-danger text-center'>Informe sua tarefa!</div> ";
                         }
-                        else{
-                            $usuario = new Usuario();
-                            $u = $usuario->select('*', $usuario->getTableName(), 'WHERE email = ?', [
-                                    $email
-                            ]);
 
-                            if($u){
-                                echo "<div class='alert alert-danger text-center'>E-mail já cadastrado.</div> ";
-                            }
+                        $todo = new Todo();
+                        $todo->insert($todo->getTableName(), [
+                           'idUsuario' => $idusuario,
+                            'descricao' => $tarefa,
+                            'data' => $dataTarefa
+                        ]);
 
-                            elseif ($senha != $resenha){
-                                echo "<div class='alert alert-danger text-center'>Sua senha e confirmação de senha não correspondem.</div> ";
-                            }
 
-                            else{
-                                if($tipoUsuario == 9){
-                                    $tipoUsuario = 0;
-                                }
-                                $usuario->insert($usuario->getTableName(), [
-                                    'nome'=>$nome,
-                                    'email'=>$email,
-                                    'senha'=>$senha,
-                                    'tipoUsuario'=>$tipoUsuario
-                                ]);
-                                echo "<div class='alert alert-success text-center'>Usuário cadastrado com sucesso.</div> ";
-
-                            }
-                        }
 
                     }
                     ?>
-                    <label>Nome</label>
-                    <input name="nome" type="text" class="form-control">
-                    <br>
-                    <label>E-mail</label>
-                    <input name="email" type="email" class="form-control">
-                    <br>
-                    <label>Senha</label>
-                    <input name="senha" type="password" class="form-control">
-                    <br>
-                    <label>Repita sua senha</label>
-                    <input name="resenha" type="password" class="form-control">
-                    <br>
-                    <label>Tipo de usuário</label>
-                    <select name="tipoUsuario" class="form-control">
-                        <option value="">Escolha uma Opção</option>
-                        <option value="9">Administrador</option>
-                        <option value="1">Usuário</option>
-                    </select>
+                    <label>Adicionar tarefa</label>
+                    <input name="tarefa" type="text" required class="form-control">
                     <br>
                     <button name="cadastrar" type="submit" class="btn btn-primary">
                         Cadastrar

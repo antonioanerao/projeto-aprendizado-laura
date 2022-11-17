@@ -3,5 +3,8 @@
     "classmap": [
       "app/Models", "core/database", "app/Traits"
     ]
+  },
+  "require": {
+    "nesbot/carbon": "^2.63"
   }
 }
