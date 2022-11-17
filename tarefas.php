@@ -12,6 +12,10 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+$todo = new Todo();
+$dataTarefa = Carbon::now()->format("Y-m-d");
+$idUsuario = Usuario::user()->id;
+
 ?>
 
 
@@ -27,6 +31,7 @@ error_reporting(E_ALL);
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <!-- Bootstrap icons-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" rel="stylesheet" />
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="css/styles.css" rel="stylesheet" />
 </head>
@@ -70,22 +75,15 @@ error_reporting(E_ALL);
                     <?php
                     if(isset($_POST['cadastrar'])) {
                         $tarefa = $_POST['tarefa'];
-                        $dataTarefa = Carbon::now();
-                        $idusuario = Usuario::user()->id;
 
                         if(empty($tarefa)) {
                             echo "<div class='alert alert-danger text-center'>Informe sua tarefa!</div> ";
                         }
-
-                        $todo = new Todo();
                         $todo->insert($todo->getTableName(), [
-                           'idUsuario' => $idusuario,
+                           'idUsuario' => $idUsuario,
                             'descricao' => $tarefa,
                             'data' => $dataTarefa
                         ]);
-
-
-
                     }
                     ?>
                     <label>Adicionar tarefa</label>
@@ -95,6 +93,55 @@ error_reporting(E_ALL);
                         Cadastrar
                     </button>
                 </form>
+                <?php
+                $tarefas = $todo->select('*', $todo->getTableName(), 'WHERE idUsuario = ? and data = ?', [
+                    $idUsuario, $dataTarefa
+                ]);
+
+                ?>
+
+
+                <?php
+
+                if(isset($_POST['check'])) {
+                    echo "concluido";
+                }
+
+                if(isset($_POST['delete'])) {
+                    echo "removido";
+                }
+
+                ?>
+
+
+                <?php if($tarefas): ?>
+                    <form method="post" action="tarefas.php">
+                        <div class="card mt-4">
+                            <div class="card-body">
+                                <ul class="mb-0">
+                                    <table class="table">
+                                    <?php foreach ($tarefas as $tarefa): ?>
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th scope="col"><?php echo $tarefa->descricao; ?></th>
+                                                <th scope="col">
+                                                    <button name="check" class="btn btn-success btn-sm"><i class="fa fa-check-circle"></i></button>
+                                                    <button name="delete" class="btn btn-danger btn-sm"><i class="fa fa-check-circle"></i></button>
+
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                    <?php endforeach; ?>
+                                    </table>
+                                </ul>
+                            </div>
+                        </div>
+                    </form>
+                <?php else: ?>
+                    <div class="alert alert-info text-center mt-4">
+                        Você não tem nenhuma tarefa para hoje
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
