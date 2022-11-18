@@ -13,7 +13,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 $todo = new Todo();
-$dataTarefa = Carbon::now()->format("Y-m-d");
+$dataTarefa = Carbon::now("America/Rio_Branco")->format("Y-m-d");
 $idUsuario = Usuario::user()->id;
 
 ?>
@@ -71,6 +71,10 @@ $idUsuario = Usuario::user()->id;
     <div class="container px-4 px-lg-5 mt-5">
         <div class="row">
             <div class="col-6 offset-3">
+
+                <label>Escolha uma data:</label>
+                <input name="dataTarefa" value="<?php echo Carbon::now('America/Rio_Branco')->format('Y-m-d') ?>" type="date" class="form-control">
+                <br>
                 <form action="tarefas.php" method="post">
                     <?php
                     if(isset($_POST['cadastrar'])) {
@@ -100,20 +104,6 @@ $idUsuario = Usuario::user()->id;
 
                 ?>
 
-
-                <?php
-
-                if(isset($_POST['check'])) {
-                    echo "concluido";
-                }
-
-                if(isset($_POST['delete'])) {
-                    echo "removido";
-                }
-
-                ?>
-
-
                 <?php if($tarefas): ?>
                     <form method="post" action="tarefas.php">
                         <div class="card mt-4">
@@ -121,13 +111,37 @@ $idUsuario = Usuario::user()->id;
                                 <ul class="mb-0">
                                     <table class="table">
                                     <?php foreach ($tarefas as $tarefa): ?>
+                                    <?php
+                                        if(isset ($_POST['delete-' . $tarefa->id])){
+                                            $todo->delete($todo->getTableName(), 'WHERE id = ?', [
+                                               $tarefa->id
+                                            ]);
+
+                                            header('Location: ' . 'tarefas.php');
+                                        }
+
+                                        if(isset($_POST['check-' . $tarefa->id])){
+                                            $todo->update($todo->getTableName(), 'concluido = ? WHERE id = ?', [
+                                               1, $tarefa->id
+                                            ]);
+
+                                            header('Location: ' . 'tarefas.php');
+                                        }
+                                    ?>
                                         <thead class="thead-dark">
                                             <tr>
-                                                <th scope="col"><?php echo $tarefa->descricao; ?></th>
                                                 <th scope="col">
-                                                    <button name="check" class="btn btn-success btn-sm"><i class="fa fa-check-circle"></i></button>
-                                                    <button name="delete" class="btn btn-danger btn-sm"><i class="fa fa-check-circle"></i></button>
-
+                                                    <?php
+                                                        if($tarefa->concluido == true) {
+                                                            echo "<s>" . $tarefa->descricao . "</s>";
+                                                        } else {
+                                                            echo $tarefa->descricao;
+                                                        }
+                                                    ?>
+                                                </th>
+                                                <th scope="col">
+                                                    <button name="check-<?php echo $tarefa->id; ?>" class="btn btn-success btn-sm"><i class="fa fa-check-circle"></i></button>
+                                                    <button name="delete-<?php echo $tarefa->id; ?>" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></button>
                                                 </th>
                                             </tr>
                                         </thead>
