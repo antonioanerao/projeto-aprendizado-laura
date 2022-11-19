@@ -1,0 +1,55 @@
+version: "3.3"
+services:
+
+  laura:
+    container_name: laura
+    image: antonioanerao/debian10-php74-sqlsrv:latest
+    restart: on-failure
+    
+    networks:
+      - local
+
+    volumes:
+      - ./:/var/www/html
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=local"
+      - "traefik.http.routers.laura.rule=Host(`laura.docker.localhost`)"
+      - "traefik.http.routers.laura.entrypoints=web"
+
+  laura-mysql:
+    image: ubuntu/mysql:8.0-22.04_beta
+    container_name: laura-mysql
+    restart: always
+    networks:
+      - local
+    environment:
+      MYSQL_DATABASE: laura
+      MYSQL_USER: laura
+      MYSQL_PASSWORD: laura
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - laura-mysql:/var/lib/mysql
+
+  laura-phpmyadmin:
+    image: phpmyadmin
+    container_name: laura-phpmyadmin
+    restart: always
+    networks:
+      - local
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=local"
+      - "traefik.http.routers.laura-phpmyadmin.rule=Host(`phpmyadmin.laura.docker.localhost`)"
+      - "traefik.http.routers.laura-phpmyadmin.entrypoints=web"
+    environment:
+      - PMA_ARBITRARY=1
+      
+
+volumes:
+  laura-mysql:
+    external: true
+
+networks:
+  local:
+    external: true
