@@ -5,7 +5,9 @@ use App\Models\Todo;
 use Carbon\Carbon;
 
 session_start();
-
+if(!isset($_SESSION['email'])){
+    header('Location: ' . 'login.php');
+}
 include_once('vendor/autoload.php');
 
 ini_set('display_errors', 1);
@@ -13,7 +15,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 $todo = new Todo();
-$dataTarefa = Carbon::now("America/Rio_Branco")->format("Y-m-d");
+//$dataTarefa = Carbon::now("America/Rio_Branco")->format("Y-m-d");
 $idUsuario = Usuario::user()->id;
 
 ?>
@@ -62,19 +64,34 @@ $idUsuario = Usuario::user()->id;
     <div class="container px-4 px-lg-5 my-5">
         <div class="text-center text-white">
             <h1 class="display-4 fw-bolder">Minhas Tarefas</h1>
-            <p>Afazeres do dia: <br><?php echo Carbon::now('America/Rio_Branco')->format('d/m/Y') ?></p>
+            <p>Afazeres do dia: </p>
+            <form action="tarefas.php" method="post">
+                <?php
+                if(isset($_POST["alterar"])) {
+                    $_SESSION["data"] = $_POST["dataTarefa"];
+                    header('Location: ' . 'tarefas.php');
+                }
+                ?>
+                <div class="row mb-3">
+                    <div class="col-2 offset-4">
+                        <input name="dataTarefa" value="<?php echo $_SESSION["data"] ?>" type="date" class="form-control">
+                    </div>
+                    <div class="col-2">
+                        <button style="width: 100%;" name="alterar" class="btn btn-primary form-group">Alterar</button>
+                    </div>
+                    <br>
+                </div>
+            </form>
         </div>
     </div>
 </header>
 <!-- Section-->
 <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">
+
+
         <div class="row">
             <div class="col-6 offset-3">
-
-                <label>Escolha uma data:</label>
-                <input name="dataTarefa" value="<?php echo Carbon::now('America/Rio_Branco')->format('Y-m-d') ?>" type="date" class="form-control">
-                <br>
                 <form action="tarefas.php" method="post">
                     <?php
                     if(isset($_POST['cadastrar'])) {
@@ -86,7 +103,7 @@ $idUsuario = Usuario::user()->id;
                         $todo->insert($todo->getTableName(), [
                            'idUsuario' => $idUsuario,
                             'descricao' => $tarefa,
-                            'data' => $dataTarefa
+                            'data' => $_SESSION["data"]
                         ]);
                     }
                     ?>
@@ -99,7 +116,7 @@ $idUsuario = Usuario::user()->id;
                 </form>
                 <?php
                 $tarefas = $todo->select('*', $todo->getTableName(), 'WHERE idUsuario = ? and data = ?', [
-                    $idUsuario, $dataTarefa
+                    $idUsuario, $_SESSION["data"]
                 ]);
 
                 ?>

@@ -1,4 +1,7 @@
 <?php
+
+use Carbon\Carbon;
+
 session_start();
 if(isset($_SESSION['email'])){
     header('Location: ' . '/');
@@ -73,6 +76,7 @@ error_reporting(E_ALL);
                                 ]);
                                 if($u){
                                     $_SESSION["email"] = $email;
+                                    $_SESSION["data"] = Carbon::now("America/Rio_Branco")->format("Y-m-d");
                                     header('Location: ' . '/');
                                 } else {
                                     echo "<div class='alert alert-danger text-center'>Usuário ou senha inválidos.</div> ";
